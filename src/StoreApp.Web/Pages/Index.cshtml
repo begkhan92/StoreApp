@@ -1,0 +1,9 @@
+@page
+@model StoreApp.Web.Pages.IndexModel
+@{ ViewData["Title"] = T["Обзор"]; }
+<h1>@T["Обзор"]</h1>
+<div class="stats">
+    <div class="stat"><span>@T["Товаров"]</span><b>@Model.ProductCount</b></div>
+    <div class="stat @(Model.LowStock > 0 ? "warn" : "")"><span>@T["Нужно заказать"]</span><b>@Model.LowStock</b></div>
+</div>
+<p class="muted">@T["Продажи, прибыль и долги появятся на 4-6 дне."]</p>

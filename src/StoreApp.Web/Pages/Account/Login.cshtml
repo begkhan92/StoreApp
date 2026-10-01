@@ -1,0 +1,13 @@
+@page
+@model StoreApp.Web.Pages.Account.LoginModel
+@{ ViewData["Title"] = T["Вход"]; }
+<form method="post" class="card">
+    <h1>@T["Вход"]</h1>
+    <div asp-validation-summary="All" class="err"></div>
+    @if (Model.Error is not null) { <div class="err">@Model.Error</div> }
+    <label>Email <input asp-for="Input.Email" autofocus /></label>
+    <label>@T["Пароль"] <input asp-for="Input.Password" type="password" /></label>
+    <label class="row"><input asp-for="Input.Remember" /> @T["Запомнить меня"]</label>
+    <button type="submit">@T["Войти"]</button>
+    <p><a href="/Account/Register">@T["Попробовать бесплатно"]</a></p>
+</form>

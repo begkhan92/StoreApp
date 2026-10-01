@@ -1,0 +1,12 @@
+@page
+@model StoreApp.Web.Pages.Account.RegisterModel
+@{ ViewData["Title"] = T["Попробовать бесплатно"]; }
+<form method="post" class="card">
+    <h1>@T["Попробовать бесплатно"]</h1>
+    <div asp-validation-summary="All" class="err"></div>
+    <label>@T["Имя"] <input asp-for="Input.FullName" autofocus /></label>
+    <label>Email <input asp-for="Input.Email" /></label>
+    <label>@T["Пароль (от 6 символов)"] <input asp-for="Input.Password" type="password" /></label>
+    <button type="submit">@T["Создать аккаунт"]</button>
+    <p><a href="/Account/Login">@T["Уже есть аккаунт"]</a></p>
+</form>

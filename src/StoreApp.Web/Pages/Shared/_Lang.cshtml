@@ -1,0 +1,6 @@
+<form method="post" asp-page="/SetLanguage" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)" class="lang">
+    @foreach (var c in JsonStringLocalizer.Supported)
+    {
+        <button type="submit" name="culture" value="@c" class="@(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == c ? "on" : "")">@(c == "tk" ? "TM" : c.ToUpperInvariant())</button>
+    }
+</form>

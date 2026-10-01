@@ -1,0 +1,13 @@
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.Mvc.RazorPages;
+global using Microsoft.EntityFrameworkCore;
+global using System.ComponentModel.DataAnnotations;
+global using StoreApp.Domain.Common;
+global using StoreApp.Domain.Entities;
+global using StoreApp.Infrastructure.Data;
+global using System.Globalization;
+global using Microsoft.AspNetCore.Localization;
+global using Microsoft.Extensions.Localization;
+global using StoreApp.Web.Services;

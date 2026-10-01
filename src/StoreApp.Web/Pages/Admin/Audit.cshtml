@@ -1,0 +1,19 @@
+@page
+@model StoreApp.Web.Pages.Admin.AuditModel
+@{ ViewData["Title"] = T["Журнал изменений"]; }
+<h1>@T["Журнал изменений"]</h1>
+<table class="tbl">
+    <thead><tr><th>@T["Время (UTC)"]</th><th>@T["Кто"]</th><th>@T["Что"]</th><th>@T["Действие"]</th><th>@T["Изменения"]</th></tr></thead>
+    <tbody>
+    @foreach (var a in Model.Items)
+    {
+        <tr>
+            <td>@a.Timestamp.ToString("dd.MM HH:mm:ss")</td>
+            <td>@(a.UserName ?? T["система"].Value)</td>
+            <td>@a.EntityName #@a.EntityId</td>
+            <td>@a.Action</td>
+            <td><code>@a.Changes</code> @a.Reason</td>
+        </tr>
+    }
+    </tbody>
+</table>

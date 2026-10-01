@@ -1,0 +1,11 @@
+@model StoreApp.Web.Pages.Products.IndexModel
+@foreach (var p in Model.Items)
+{
+    <tr class="@(p.StockQty <= p.MinStock ? "low" : "")">
+        <td>@p.Sku</td>
+        <td>@p.Name</td>
+        <td class="num">@p.SalePrice.ToString("N2")</td>
+        <td class="num">@p.StockQty</td>
+    </tr>
+}
+@if (Model.Items.Count == 0) { <tr><td colspan="4" class="muted">@T["Ничего не найдено"]</td></tr> }

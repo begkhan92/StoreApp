@@ -1,0 +1,37 @@
+@{
+    var authed = User.Identity?.IsAuthenticated == true;
+    var staff = User.IsInRole(Roles.Owner) || User.IsInRole(Roles.Manager);
+}
+<!DOCTYPE html>
+<html lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] — @T["Магазин"]</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js" defer></script>
+</head>
+<body class="@(authed ? "" : "auth")">
+@if (authed)
+{
+    <aside class="side">
+        <div class="brand">@T["Магазин"]</div>
+        <nav>
+            <a href="/">@T["Обзор"]</a>
+            <a href="/Products">@T["Товары"]</a>
+            @if (staff) { <a href="/Admin/Audit">@T["Журнал изменений"]</a> }
+        </nav>
+        <partial name="_Lang" />
+        <form method="post" asp-page="/Account/Logout" class="who">
+            <span>@User.Identity!.Name</span>
+            <button type="submit">@T["Выйти"]</button>
+        </form>
+    </aside>
+}
+<main class="main">
+    @if (!authed) { <partial name="_Lang" /> }
+    @RenderBody()
+</main>
+</body>
+</html>
