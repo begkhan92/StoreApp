@@ -1,0 +1,45 @@
+﻿@model StoreApp.Web.Pages.Products.IndexModel
+@if (Model.IsHtmx)
+{
+    @* keeps sort/size in the filter form up to date after a table swap *@
+    <span id="filter-state" hx-swap-oob="true"><partial name="_TableState" model="Model" /></span>
+}
+@{
+    void Th(string col, string label, string cls = "")
+    {
+        var u = Model.SortUrl(col);
+        <th class="@cls"><a class="sort" href="@u" hx-get="@u" hx-target="#table-area" hx-push-url="true">@(label + Model.SortMark(col))</a></th>
+    }
+}
+<div class="tbl-wrap">
+    <table class="tbl">
+        <thead>
+            <tr>
+                @{
+                    Th("sku", T["Артикул"].Value); Th("name", T["Название"].Value);
+                }
+                <th>@T["Категория"]</th>
+                @{
+                    Th("price", T["Цена"].Value, "num"); Th("stock", T["Остаток"].Value, "num");
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model.Result.Items)
+            {
+                <tr class="@(p.StockQty <= p.MinStock ? "low" : "")">
+                    <td>@p.Sku</td>
+                    <td>@p.Name</td>
+                    <td>@p.Category?.Name</td>
+                    <td class="num">@p.SalePrice.ToString("N2")</td>
+                    <td class="num">@p.StockQty</td>
+                </tr>
+            }
+            @if (Model.Result.Items.Count == 0)
+            {
+                <tr><td colspan="5" class="muted">@T["Ничего не найдено"]</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+<partial name="_Pager" model="Model.Pager" />

@@ -1,0 +1,10 @@
+﻿@model StoreApp.Web.Services.TablePageModel
+<input type="hidden" name="size" value="@Model.PageSize" />
+@if (Model.Sort is not null)
+{
+    <input type="hidden" name="sort" value="@Model.Sort" />
+}
+@if (Model.Desc)
+{
+    <input type="hidden" name="desc" value="true" />
+}

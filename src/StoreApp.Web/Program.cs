@@ -63,6 +63,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(o =>
     o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto);
 builder.Services.AddResponseCompression();
 builder.Services.AddRazorPages().AddDataAnnotationsLocalization();
+builder.Services.AddAntiforgery(o => o.HeaderName = "RequestVerificationToken");
 
 var app = builder.Build();
 

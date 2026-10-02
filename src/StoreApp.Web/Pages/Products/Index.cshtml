@@ -1,11 +1,17 @@
 @page
 @model StoreApp.Web.Pages.Products.IndexModel
-@{ ViewData["Title"] = T["Товары"]; }
+@{
+    ViewData["Title"] = T["Товары"];
+}
 <h1>@T["Товары"]</h1>
-<input type="search" name="q" value="@Model.Q" class="search" autofocus autocomplete="off"
-       placeholder="@T["Название, артикул или штрихкод"]"
-       hx-get="@Url.Page("Index")" hx-trigger="input changed delay:150ms, search" hx-target="#rows" />
-<table class="tbl">
-    <thead><tr><th>@T["Артикул"]</th><th>@T["Название"]</th><th class="num">@T["Цена"]</th><th class="num">@T["Остаток"]</th></tr></thead>
-    <tbody id="rows"><partial name="_ProductRows" model="Model" /></tbody>
-</table>
+
+<form method="get" action="@Url.Page("Index")" class="filters"
+      hx-get="@Url.Page("Index")" hx-target="#table-area" hx-push-url="true"
+      hx-trigger="input delay:200ms, change delay:200ms">
+    <input type="search" name="q" value="@Model.Q" class="search" autofocus autocomplete="off"
+           placeholder="@T["Название, артикул или штрихкод"]" />
+    <label class="row"><input type="checkbox" name="low" value="true" checked="@Model.Low" /> @T["Мало на складе"]</label>
+    <span id="filter-state"><partial name="_TableState" model="Model" /></span>
+</form>
+
+<div id="table-area"><partial name="_Table" model="Model" /></div>

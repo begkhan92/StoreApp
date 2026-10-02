@@ -36,5 +36,8 @@
   "Изменения": "Changes",
   "система": "system",
   "Пароль слишком короткий (минимум {0} символов).": "Password is too short (minimum {0} characters).",
-  "Этот email уже зарегистрирован.": "This email is already registered."
+  "Этот email уже зарегистрирован.": "This email is already registered.",
+  "Мало на складе": "Low stock",
+  "Показывать по": "Show",
+  "Категория": "Category"
 }

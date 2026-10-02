@@ -1,0 +1,42 @@
+﻿@model StoreApp.Web.Services.PagerModel
+@{
+    var start = Math.Max(1, Model.Page - 2);
+    var end = Math.Min(Model.TotalPages, Model.Page + 2);
+
+    void Link(int n, string text, bool on = false)
+    {
+        var u = Model.PageUrl(n);
+        <a class="@(on ? "on" : "")" href="@u" hx-get="@u" hx-target="#table-area" hx-push-url="true">@text</a>
+    }
+}
+<div class="pager">
+    <span class="muted">@Model.From–@Model.To / @Model.Total</span>
+    <span class="pages">
+        @if (Model.Page > 1) { Link(Model.Page - 1, "‹"); }
+        @if (start > 1)
+        {
+            Link(1, "1"); if (start > 2)
+            {
+                <span>…</span>
+            }
+        }
+        @for (var i = start; i <= end; i++) { Link(i, i.ToString(), i == Model.Page); }
+        @if (end < Model.TotalPages)
+        {
+            if (end < Model.TotalPages - 1)
+            {
+                <span>…</span>
+            }
+            Link(Model.TotalPages, Model.TotalPages.ToString());
+        }
+        @if (Model.Page < Model.TotalPages) { Link(Model.Page + 1, "›"); }
+    </span>
+    <span class="sizes">
+        @T["Показывать по"]
+        @foreach (var s in PagingExtensions.PageSizes)
+        {
+            var u = Model.SizeUrl(s);
+            <a class="@(s == Model.PageSize ? "on" : "")" href="@u" hx-get="@u" hx-target="#table-area" hx-push-url="true">@s</a>
+        }
+    </span>
+</div>
