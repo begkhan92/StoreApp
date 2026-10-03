@@ -1,0 +1,20 @@
+﻿@page
+@model StoreApp.Web.Pages.Admin.SettingsModel
+@{
+    ViewData["Title"] = T["Настройки"];
+}
+<h1>@T["Настройки"]</h1>
+<form method="post" class="card wide">
+    <div asp-validation-summary="All" class="err"></div>
+    @if (Model.Saved)
+    {
+        <div class="ok">@T["Сохранено"]</div>
+    }
+    <label>@T["Название магазина"] <input asp-for="Input.StoreName" /></label>
+    <label>@T["Валюта"] <select asp-for="Input.Currency" asp-items="Model.Currencies"></select></label>
+    <label>@T["Часовой пояс"] <select asp-for="Input.TimeZoneId" asp-items="Model.Zones"></select></label>
+    <label>@T["Язык по умолчанию"] <select asp-for="Input.DefaultLanguage" asp-items="Model.Languages"></select></label>
+    <label>@T["Шапка чека"] <textarea asp-for="Input.ReceiptHeader" rows="3"></textarea></label>
+    <label>@T["Подвал чека"] <textarea asp-for="Input.ReceiptFooter" rows="3"></textarea></label>
+    <button type="submit">@T["Сохранить"]</button>
+</form>

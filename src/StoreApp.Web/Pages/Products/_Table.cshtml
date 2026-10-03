@@ -31,7 +31,7 @@
                     <td>@p.Sku</td>
                     <td>@p.Name</td>
                     <td>@p.Category?.Name</td>
-                    <td class="num">@p.SalePrice.ToString("N2")</td>
+                    <td class="num">@Store.Money(p.SalePrice)</td>
                     <td class="num">@p.StockQty</td>
                 </tr>
             }

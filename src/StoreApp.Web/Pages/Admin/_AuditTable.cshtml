@@ -1,12 +1,12 @@
 ﻿@model StoreApp.Web.Pages.Admin.AuditModel
 <div class="tbl-wrap">
     <table class="tbl">
-        <thead><tr><th>@T["Время (UTC)"]</th><th>@T["Кто"]</th><th>@T["Что"]</th><th>@T["Действие"]</th><th>@T["Изменения"]</th></tr></thead>
+        <thead><tr><th>@T["Время"]</th><th>@T["Кто"]</th><th>@T["Что"]</th><th>@T["Действие"]</th><th>@T["Изменения"]</th></tr></thead>
         <tbody>
             @foreach (var a in Model.Result.Items)
             {
                 <tr>
-                    <td>@a.Timestamp.ToString("dd.MM HH:mm:ss")</td>
+                    <td>@Store.Local(a.Timestamp, "dd.MM HH:mm:ss")</td>
                     <td>@(a.UserName ?? T["система"].Value)</td>
                     <td>@a.EntityName #@a.EntityId</td>
                     <td>@a.Action</td>

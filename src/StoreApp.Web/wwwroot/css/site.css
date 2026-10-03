@@ -127,3 +127,20 @@ body.auth .lang{justify-content:flex-end}
         padding: 14px
     }
 }
+
+select, textarea {
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font: inherit;
+    background: #fff
+}
+
+.card.wide {
+    max-width: 520px
+}
+
+.ok {
+    color: #15803d;
+    font-size: 13px
+}

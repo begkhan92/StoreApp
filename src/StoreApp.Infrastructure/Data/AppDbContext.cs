@@ -22,6 +22,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<SaleItem> SaleItems => Set<SaleItem>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<StoreSettings> Settings => Set<StoreSettings>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
         => builder.Properties<decimal>().HaveConversion<MoneyConverter>();

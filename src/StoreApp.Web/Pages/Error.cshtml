@@ -1,0 +1,15 @@
+﻿@page
+@model StoreApp.Web.Pages.ErrorModel
+@{
+    ViewData["Title"] = T["Что-то пошло не так"];
+}
+<h1>
+    @(Model.Code switch
+    {
+        404 => T["Страница не найдена"].Value,
+        429 => T["Слишком много запросов. Подождите и попробуйте снова."].Value,
+        _ => T["Что-то пошло не так"].Value
+    })
+</h1>
+<p class="muted">@T["Код ошибки"]: @Model.Code · @Model.RequestId</p>
+<p><a href="/">@T["На главную"]</a></p>

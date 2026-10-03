@@ -1,13 +1,24 @@
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
+using Serilog;
+using Serilog.Events;
 using StoreApp.Web.Security;
-using StoreApp.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 Directory.CreateDirectory(Path.Combine(builder.Environment.ContentRootPath, "App_Data"));
 
+// Logs: console + daily files in App_Data/logs, 14 days kept.
+builder.Host.UseSerilog((ctx, lc) => lc
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+    .WriteTo.Console()
+    .WriteTo.File(Path.Combine(ctx.HostingEnvironment.ContentRootPath, "App_Data", "logs", "log-.txt"),
+        rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14));
+
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<StoreSettingsService>();
 builder.Services.AddSingleton<JsonStringLocalizer>();
 builder.Services.AddSingleton<IStringLocalizer>(sp => sp.GetRequiredService<JsonStringLocalizer>());
 builder.Services.AddSingleton<IStringLocalizerFactory>(sp => sp.GetRequiredService<JsonStringLocalizer>());
@@ -17,8 +28,15 @@ builder.Services.Configure<RequestLocalizationOptions>(o =>
     o.DefaultRequestCulture = new RequestCulture("ru");
     o.SupportedCultures = cultures;
     o.SupportedUICultures = cultures;
-    o.RequestCultureProviders = [new CookieRequestCultureProvider()]; // language = choice, not browser guess
+    o.RequestCultureProviders =
+    [
+        new CookieRequestCultureProvider(), // the user's own choice
+        new CustomRequestCultureProvider(ctx => // otherwise the store's default language
+            Task.FromResult<ProviderCultureResult?>(new ProviderCultureResult(
+                ctx.RequestServices.GetRequiredService<StoreSettingsService>().Current.DefaultLanguage))),
+    ];
 });
+
 builder.Services.AddScoped<ICurrentUser, CurrentUserService>();
 builder.Services.AddScoped<AuditContext>();
 builder.Services.AddScoped<AuditSaveChangesInterceptor>();
@@ -32,7 +50,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole<int>>(o =>
     o.Password.RequireNonAlphanumeric = false;
     o.Password.RequireUppercase = false;
     o.User.RequireUniqueEmail = true;
-}).AddEntityFrameworkStores<AppDbContext>().AddErrorDescriber<LocalizedIdentityErrorDescriber>().AddDefaultTokenProviders();
+}).AddEntityFrameworkStores<AppDbContext>()
+  .AddErrorDescriber<LocalizedIdentityErrorDescriber>()
+  .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(o =>
 {
@@ -49,6 +69,7 @@ builder.Services.AddAuthorization(o =>
     o.AddPolicy(Policies.ViewReports, p => p.RequireRole(Roles.Owner, Roles.Manager));
     o.AddPolicy(Policies.ViewAudit, p => p.RequireRole(Roles.Owner, Roles.Manager));
     o.AddPolicy(Policies.ManageUsers, p => p.RequireRole(Roles.Owner));
+    o.AddPolicy(Policies.ManageSettings, p => p.RequireRole(Roles.Owner));
 });
 
 builder.Services.AddRateLimiter(o =>
@@ -59,28 +80,36 @@ builder.Services.AddRateLimiter(o =>
         _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromHours(1) }));
 });
 
+builder.Services.AddAntiforgery(o => o.HeaderName = "RequestVerificationToken");
 builder.Services.Configure<ForwardedHeadersOptions>(o =>
     o.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto);
 builder.Services.AddResponseCompression();
-builder.Services.AddRazorPages().AddDataAnnotationsLocalization();
-builder.Services.AddAntiforgery(o => o.HeaderName = "RequestVerificationToken");
+builder.Services.AddHealthChecks().AddCheck<DbHealthCheck>("db");
+
+builder.Services.AddRazorPages()
+    .AddMvcOptions(o => o.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider()))
+    .AddDataAnnotationsLocalization();
 
 var app = builder.Build();
 
 app.UseForwardedHeaders();
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler(a => a.Run(c => c.Response.WriteAsync("Ошибка сервера. Попробуйте ещё раз.")));
+    app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
+app.UseStatusCodePagesWithReExecute("/Error", "?code={0}");
 app.UseResponseCompression();
 app.UseStaticFiles();
+app.UseSerilogRequestLogging();
 app.UseRequestLocalization();
 app.UseRouting();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
+app.MapHealthChecks("/health").AllowAnonymous();
 
 await DbSeeder.SeedAsync(app.Services, app.Configuration);
+await app.Services.GetRequiredService<StoreSettingsService>().RefreshAsync();
 app.Run();

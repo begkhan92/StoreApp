@@ -39,6 +39,11 @@ public static class DbSeeder
         await db.Database.MigrateAsync();
         await EnableWalAsync(db);
         await SeedIdentityAsync(sp, config);
+        if (!await db.Settings.AnyAsync())
+        {
+            db.Settings.Add(new StoreSettings());
+            await db.SaveChangesAsync();
+        }
         if (!await db.Products.AnyAsync()) await SeedCatalogAsync(db);
     }
 
